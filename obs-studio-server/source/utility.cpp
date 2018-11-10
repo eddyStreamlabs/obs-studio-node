@@ -24,7 +24,7 @@ utility::unique_id::~unique_id() {}
 utility::unique_id::id_t utility::unique_id::allocate()
 {
 	if (allocated.size() > 0) {
-		for (auto& v : allocated) {
+		/*for (auto& v : allocated) {
 			if (v.first > 0) {
 				utility::unique_id::id_t v2 = v.first - 1;
 				mark_used(v2);
@@ -34,7 +34,7 @@ utility::unique_id::id_t utility::unique_id::allocate()
 				mark_used(v2);
 				return v2;
 			}
-		}
+		}*/
 	} else {
 		mark_used(0);
 		return 0;
