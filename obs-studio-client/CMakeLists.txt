@@ -100,7 +100,7 @@ ADD_LIBRARY(
 	${PROJECT_SOURCE}
 )
 
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
 
 TARGET_LINK_LIBRARIES(
 	${PROJECT_NAME}

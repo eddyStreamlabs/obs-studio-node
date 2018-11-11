@@ -274,7 +274,7 @@ Nan::NAN_METHOD_RETURN_TYPE osn::ISource::GetProperties(Nan::NAN_METHOD_ARGS_TYP
 				osn::ListProperty::Item item2;
 				item2.name     = item.name;
 				item2.disabled = !item.enabled;
-				switch (cast_property->format) {
+				switch ((uint8_t)cast_property->format) {
 				case obs::ListProperty::Format::Integer:
 					item2.value_int = item.value_int;
 					break;

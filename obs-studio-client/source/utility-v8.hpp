@@ -264,26 +264,6 @@ namespace utilv8
 		return false;
 	}
 
-	[[deprecated("v8::Number does not map perfectly to 64-bit Integers")]] inline bool
-	    FromValue(v8::Local<v8::Value> l, int64_t& r)
-	{
-		if (l->IsNumber()) {
-			r = (int64_t)l->NumberValue();
-			return true;
-		}
-		return false;
-	}
-
-	[[deprecated("v8::Number does not map perfectly to 64-bit Integers")]] inline bool
-	    FromValue(v8::Local<v8::Value> l, uint64_t& r)
-	{
-		if (l->IsNumber()) {
-			r = (uint64_t)l->NumberValue();
-			return true;
-		}
-		return false;
-	}
-
 	// Floating Point
 	inline bool FromValue(v8::Local<v8::Value> l, float_t& r)
 	{
