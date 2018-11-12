@@ -3,6 +3,7 @@
 #include <list>
 #include <memory>
 #include <vector>
+#include <string>
 
 namespace obs
 {
@@ -89,9 +90,9 @@ namespace obs
 
 	struct FloatProperty : NumberProperty
 	{
-		double_t minimum;
-		double_t maximum;
-		double_t step;
+		double minimum;
+		double maximum;
+		double step;
 
 		virtual ~FloatProperty(){};
 
@@ -170,7 +171,7 @@ namespace obs
 			bool        enabled;
 
 			int64_t     value_int;
-			double_t    value_float;
+			double    value_float;
 			std::string value_string;
 		};
 		std::list<Item> items;

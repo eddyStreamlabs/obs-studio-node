@@ -32,7 +32,7 @@
 #define ASSERT_INFO_LENGTH_AT_LEAST(info, length)                                                        \
 	if ((info).Length() < length) {                                                                      \
 		Nan::ThrowError(FIELD_NAME(                                                                      \
-		    __FUNCTION_NAME__ ": Unexpected number of arguments, got " + std::to_string((info).Length()) \
+		    std::string(__FUNCTION_NAME__) + ": Unexpected number of arguments, got " + std::to_string((info).Length()) \
 		    + std::string(" but expected at least ") + std::to_string(length) + std::string(".")));      \
 		return;                                                                                          \
 	}
@@ -40,7 +40,7 @@
 #define ASSERT_INFO_LENGTH(info, length)                                                                 \
 	if ((info).Length() != (length)) {                                                                   \
 		Nan::ThrowError(FIELD_NAME(                                                                      \
-		    __FUNCTION_NAME__ ": Unexpected number of arguments, got " + std::to_string((info).Length()) \
+		    std::string(__FUNCTION_NAME__) + ": Unexpected number of arguments, got " + std::to_string((info).Length()) \
 		    + std::string(" but expected exactly ") + std::to_string(length) + std::string(".")));       \
 		return;                                                                                          \
 	}
@@ -54,7 +54,7 @@
 #define ASSERT_GET_VALUE(value, var)                                                          \
 	if (!utilv8::FromValue((value), (var))) {                                                 \
 		Nan::ThrowTypeError(FIELD_NAME(                                                       \
-		    std::string(__FUNCTION_NAME__ ": Unexpected type, got '") + utilv8::TypeOf(value) \
+		    std::string(__FUNCTION_NAME__) +  ": Unexpected type, got '" + utilv8::TypeOf(value) \
 		    + std::string("', expected '") + utility::TypeOf(var) + std::string("'.")));      \
 		return;                                                                               \
 	}
@@ -607,7 +607,7 @@ namespace utilv8
 				rows.swap(async->data);
 			}
 
-			for (decltype(rows)::size_type i = 0, size = rows.size(); i < size; i++) {
+			for (size_t i = 0, size = rows.size(); i < size; i++) {
 				async->callback(async->parent, rows[i]);
 			}
 		}

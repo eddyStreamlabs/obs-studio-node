@@ -73,16 +73,15 @@ void utility::SetThreadName(const char* threadName)
 //	utility::SetThreadName(threadId, threadName);
 //}
 #else // Linux, Mac
-#include <sys/prctl.h>
 
-void Utility::SetThreadName(std::thread* pthread, const char* threadName)
+void utility::SetThreadName(std::thread* pthread, const char* threadName)
 {
 	auto handle = pthread->native_handle();
-	pthread_setname_np(handle, threadName);
+	pthread_setname_np(threadName);
 }
-void Utility::SetThreadName(const char* threadName)
+void utility::SetThreadName(const char* threadName)
 {
-	prctl(PR_SET_NAME, threadName, 0, 0, 0);
+	// prctl(PR_SET_NAME, threadName, 0, 0, 0);
 }
 #endif
 

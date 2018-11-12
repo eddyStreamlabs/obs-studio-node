@@ -237,6 +237,8 @@ std::shared_ptr<ipc::client> Controller::host(const std::string& uri)
 	if (m_isServer)
 		return nullptr;
 
+	#ifdef WIN32
+
 	std::stringstream commandLine;
 	commandLine << "\"" << serverBinaryPath << "\""
 	            << " " << uri;
@@ -261,12 +263,16 @@ std::shared_ptr<ipc::client> Controller::host(const std::string& uri)
 
 	write_pid_file(pid_path, procId.id);
 
+	#endif
+
 	// Connect
 	std::shared_ptr<ipc::client> cl = connect(uri);
 	if (!cl) { // Assume the server broke or was not allowed to run.
 		disconnect();
+		#ifdef WIN32
 		uint32_t exitcode;
 		kill(procId, 0, exitcode);
+		#endif
 		return nullptr;
 	}
 
@@ -298,10 +304,12 @@ std::shared_ptr<ipc::client> Controller::connect(
 			break;
 
 		if (procId.handle != 0) {
+			#ifdef WIN32
 			// We are the owner of the server, but m_isServer is false for now.
 			if (!is_process_alive(procId)) {
 				break;
 			}
+			#endif
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -323,6 +331,7 @@ void Controller::disconnect()
 
 		// Wait for process exit.
 		auto wait_begin = std::chrono::high_resolution_clock::now();
+		#ifdef WIN32
 		while (is_process_alive(procId)) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 			auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -344,6 +353,7 @@ void Controller::disconnect()
 				break; // Failed.
 			}
 		}
+		#endif
 		m_isServer = false;
 	}
 	m_connection = nullptr;
@@ -384,7 +394,9 @@ void js_setServerPath(const v8::FunctionCallbackInfo<v8::Value>& args)
 
 		serverWorkingPath = *v8::String::Utf8Value(args[1]);
 	} else {
+		#ifdef WIN32
 		serverWorkingPath = get_working_directory();
+		#endif
 	}
 
 	return;
@@ -480,9 +492,9 @@ void js_disconnect(const v8::FunctionCallbackInfo<v8::Value>& args)
 
 INITIALIZER(js_ipc)
 {
-	initializerFunctions.push([](v8::Local<v8::Object>& exports) {
+	initializerFunctions.push([](const v8::Local<v8::Object>& exports) {
 		// IPC related functions will be under the IPC object.
-		auto obj = v8::Object::New(exports->GetIsolate());
+		v8::Local<v8::Object> obj = v8::Object::New(exports->GetIsolate());
 		NODE_SET_METHOD(obj, "setServerPath", js_setServerPath);
 		NODE_SET_METHOD(obj, "connect", js_connect);
 		NODE_SET_METHOD(obj, "host", js_host);

@@ -261,7 +261,7 @@ obs::Property::Type obs::FloatProperty::type()
 size_t obs::FloatProperty::size()
 {
 	size_t total = NumberProperty::size();
-	total += sizeof(double_t) * 3;
+	total += sizeof(double) * 3;
 	return total;
 }
 
@@ -276,12 +276,12 @@ bool obs::FloatProperty::serialize(std::vector<char>& buf)
 	}
 
 	size_t offset                              = NumberProperty::size();
-	*reinterpret_cast<double_t*>(&buf[offset]) = minimum;
-	offset += sizeof(double_t);
-	*reinterpret_cast<double_t*>(&buf[offset]) = maximum;
-	offset += sizeof(double_t);
-	*reinterpret_cast<double_t*>(&buf[offset]) = step;
-	offset += sizeof(double_t);
+	*reinterpret_cast<double*>(&buf[offset]) = minimum;
+	offset += sizeof(double);
+	*reinterpret_cast<double*>(&buf[offset]) = maximum;
+	offset += sizeof(double);
+	*reinterpret_cast<double*>(&buf[offset]) = step;
+	offset += sizeof(double);
 
 	return true;
 }
@@ -297,12 +297,12 @@ bool obs::FloatProperty::read(std::vector<char> const& buf)
 	}
 
 	size_t offset = NumberProperty::size();
-	minimum       = *reinterpret_cast<const double_t*>(&buf[offset]);
-	offset += sizeof(double_t);
-	maximum = *reinterpret_cast<const double_t*>(&buf[offset]);
-	offset += sizeof(double_t);
-	step = *reinterpret_cast<const double_t*>(&buf[offset]);
-	offset += sizeof(double_t);
+	minimum       = *reinterpret_cast<const double*>(&buf[offset]);
+	offset += sizeof(double);
+	maximum = *reinterpret_cast<const double*>(&buf[offset]);
+	offset += sizeof(double);
+	step = *reinterpret_cast<const double*>(&buf[offset]);
+	offset += sizeof(double);
 
 	return true;
 }
@@ -449,7 +449,7 @@ size_t obs::ListProperty::size()
 			total += sizeof(int64_t);
 			break;
 		case Format::Float:
-			total += sizeof(double_t);
+			total += sizeof(double);
 			break;
 		case Format::String:
 			total += sizeof(size_t);
@@ -493,8 +493,8 @@ bool obs::ListProperty::serialize(std::vector<char>& buf)
 			offset += sizeof(int64_t);
 			break;
 		case Format::Float:
-			reinterpret_cast<double_t&>(buf[offset]) = entry.value_float;
-			offset += sizeof(double_t);
+			reinterpret_cast<double&>(buf[offset]) = entry.value_float;
+			offset += sizeof(double);
 			break;
 		case Format::String:
 			reinterpret_cast<size_t&>(buf[offset]) = entry.value_string.size();
@@ -546,8 +546,8 @@ bool obs::ListProperty::read(std::vector<char> const& buf)
 			offset += sizeof(int64_t);
 			break;
 		case Format::Float:
-			entry.value_float = reinterpret_cast<const double_t&>(buf[offset]);
-			offset += sizeof(double_t);
+			entry.value_float = reinterpret_cast<const double&>(buf[offset]);
+			offset += sizeof(double);
 			break;
 		case Format::String:
 			length = reinterpret_cast<const size_t&>(buf[offset]);
