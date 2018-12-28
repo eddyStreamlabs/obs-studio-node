@@ -45,12 +45,14 @@
 
 #ifdef _WIN32
 extern "C" __declspec(dllexport) DWORD NvOptimusEnablement = 1;
-#endif
+
 
 #ifndef _DEBUG
 #include "client/crash_report_database.h"
 #include "client/crashpad_client.h"
 #include "client/settings.h"
+#endif
+
 #endif
 
 #if defined(_WIN32)
@@ -97,6 +99,8 @@ namespace System
 
 int main(int argc, char* argv[])
 {
+#if defined(_WIN32)
+
 #ifndef _DEBUG
 	std::wstring             appdata_path;
 	crashpad::CrashpadClient client;
@@ -136,6 +140,7 @@ int main(int argc, char* argv[])
 
 	rc = client.WaitForHandlerStart(INFINITE);
 	/* TODO Check rc value for errors */
+#endif
 #endif
 #endif
 

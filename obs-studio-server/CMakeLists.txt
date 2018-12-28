@@ -40,6 +40,7 @@ ENDIF()
 ############################
 # Setup crashpad binaries
 ############################
+IF(WIN32)
 download_project(
 	PROJ crashpad
 	URL https://ci.appveyor.com/api/buildjobs/r1068pgmh2gv2x25/artifacts/win-x64.tar.gz
@@ -123,7 +124,7 @@ target_link_libraries(crashpad_util INTERFACE crashpad_client)
 add_dependencies(crashpad_base crashpad_ep)
 add_dependencies(crashpad_client crashpad_base)
 add_dependencies(crashpad_util crashpad_client)
-
+ENDIF()
 #############################
 # Prerequisites
 #############################
@@ -215,7 +216,6 @@ ADD_EXECUTABLE(
 TARGET_LINK_LIBRARIES(
 	${PROJECT_NAME}
 	${PROJECT_LIBRARIES}
-	optimized crashpad
 )
 
 TARGET_INCLUDE_DIRECTORIES(
@@ -304,12 +304,14 @@ INSTALL(TARGETS obs-studio-server
 	RUNTIME DESTINATION "./" COMPONENT Runtime
 )
 #if(WIN32 AND MSVC AND (NOT MSVC_VERSION LESS 1600) AND (NOT CMAKE_VERSION VERSION_LESS "3.1"))
-	INSTALL(FILES $<TARGET_PDB_FILE:obs-studio-server> DESTINATION "./" OPTIONAL)
+	# INSTALL(FILES $<TARGET_PDB_FILE:obs-studio-server> DESTINATION "./" OPTIONAL)
 #ENDIF()
 INSTALL(DIRECTORY ${PROJECT_DATA} DESTINATION "./" OPTIONAL)
 
 # Crashpad
+IF(WIN32)
 INSTALL(DIRECTORY ${crashpad_SOURCE_DIR}/bin/ DESTINATION "./")
+ENDIF()
 
 # libobs
 INSTALL(DIRECTORY "${libobs_SOURCE_DIR}/bin/" DESTINATION "./" PATTERN "*.lib" EXCLUDE)
