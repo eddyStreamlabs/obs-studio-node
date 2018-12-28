@@ -247,7 +247,7 @@ void osn::VolMeter::AddCallback(
 	}
 
 	rval.push_back(ipc::value(uint64_t(ErrorCode::Ok)));
-	rval.push_back(ipc::value(meter->callback_count));
+	// rval.push_back(ipc::value(meter->callback_count));
 	AUTO_DEBUG;
 }
 
@@ -274,7 +274,7 @@ void osn::VolMeter::RemoveCallback(
 	}
 
 	rval.push_back(ipc::value(uint64_t(ErrorCode::Ok)));
-	rval.push_back(ipc::value(meter->callback_count));
+	// rval.push_back(ipc::value(meter->callback_count));
 	AUTO_DEBUG;
 }
 
@@ -327,11 +327,11 @@ void osn::VolMeter::OBSCallback(
 	std::unique_lock<std::mutex> ulock(meter->current_data_mtx);
 
 	meter->current_data.ch = obs_volmeter_get_nr_channels(meter->self);
-	for (size_t ch = 0; ch < MAX_AUDIO_CHANNELS; ch++) {
-		meter->current_data.magnitude[ch]  = MAKE_FLOAT_SANE(magnitude[ch]);
-		meter->current_data.peak[ch]       = MAKE_FLOAT_SANE(peak[ch]);
-		meter->current_data.input_peak[ch] = MAKE_FLOAT_SANE(input_peak[ch]);
-	}
+	// for (size_t ch = 0; ch < MAX_AUDIO_CHANNELS; ch++) {
+	// 	meter->current_data.magnitude[ch]  = MAKE_FLOAT_SANE(magnitude[ch]);
+	// 	meter->current_data.peak[ch]       = MAKE_FLOAT_SANE(peak[ch]);
+	// 	meter->current_data.input_peak[ch] = MAKE_FLOAT_SANE(input_peak[ch]);
+	// }
 
 #undef MAKE_FLOAT_SANE
 }

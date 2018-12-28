@@ -91,16 +91,16 @@ IF(WIN32)
 	)
 ENDIF()
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -undefined dynamic_lookup")
+
 #############################
 # Building
 #############################
 ADD_LIBRARY(
 	${PROJECT_NAME}
-	MODULE
+	SHARED
 	${PROJECT_SOURCE}
 )
-
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
 
 TARGET_LINK_LIBRARIES(
 	${PROJECT_NAME}

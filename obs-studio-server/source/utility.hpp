@@ -67,7 +67,7 @@ namespace utility
 			if (uid == std::numeric_limits<utility::unique_id::id_t>::max()) {
 				return uid;
 			}
-			object_map.insert_or_assign(uid, obj);
+			// object_map.insert_or_assign(uid, obj);
 			return uid;
 		}
 
@@ -130,7 +130,7 @@ namespace utility
 			if (uid == std::numeric_limits<utility::unique_id::id_t>::max()) {
 				return uid;
 			}
-			object_map.insert_or_assign(uid, obj);
+			// object_map.insert_or_assign(uid, obj);
 			return uid;
 		}
 

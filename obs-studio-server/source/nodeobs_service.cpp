@@ -1,6 +1,8 @@
 #include "nodeobs_service.h"
+#ifdef WIN32
 #include <ShlObj.h>
 #include <windows.h>
+#endif
 #include "error.hpp"
 #include "shared.hpp"
 
@@ -790,9 +792,11 @@ void OBS_service::createService()
 {
 	const char* type;
 
+	#ifdef WIN32
 	struct stat buffer;
     bool fileExist = (stat (ConfigManager::getInstance().getService().c_str(), &buffer) == 0);
-
+    #endif
+    bool fileExist = false;
 	obs_data_t* data;
 	obs_data_t* settings;
 	obs_data_t* hotkey_data;
@@ -1171,6 +1175,7 @@ void OBS_service::updateVideoStreamingEncoder()
 
 std::string OBS_service::GetDefaultVideoSavePath(void)
 {
+	#ifdef WIN32
 	wchar_t path_utf16[MAX_PATH];
 	char    path_utf8[MAX_PATH] = {};
 
@@ -1178,6 +1183,8 @@ std::string OBS_service::GetDefaultVideoSavePath(void)
 
 	os_wcs_to_utf8(path_utf16, wcslen(path_utf16), path_utf8, MAX_PATH);
 	return std::string(path_utf8);
+	#endif
+	return "";
 }
 
 void OBS_service::updateService(void)

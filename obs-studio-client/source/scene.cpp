@@ -32,7 +32,7 @@ osn::Scene::Scene(uint64_t id)
 	this->sourceId = id;
 }
 
-Nan::Persistent<v8::FunctionTemplate> osn::Scene::prototype = Nan::Persistent<v8::FunctionTemplate>();
+Nan::Persistent<v8::FunctionTemplate> osn::Scene::prototype;
 
 void osn::Scene::Register(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE target)
 {
@@ -249,7 +249,7 @@ Nan::NAN_METHOD_RETURN_TYPE osn::Scene::FindItem(Nan::NAN_METHOD_ARGS_TYPE info)
 {
 	bool        haveName = false;
 	std::string name;
-	int64_t     position;
+	int32_t     position;
 
 	osn::Scene* scene = nullptr;
 	if (!utilv8::RetrieveDynamicCast<osn::ISource, osn::Scene>(info.This(), scene)) {
@@ -310,7 +310,7 @@ Nan::NAN_METHOD_RETURN_TYPE osn::Scene::MoveItem(Nan::NAN_METHOD_ARGS_TYPE info)
 
 Nan::NAN_METHOD_RETURN_TYPE osn::Scene::GetItemAtIndex(Nan::NAN_METHOD_ARGS_TYPE info)
 {
-	int64_t index;
+	int32_t index;
 
 	osn::Scene* scene = nullptr;
 	if (!utilv8::RetrieveDynamicCast<osn::ISource, osn::Scene>(info.This(), scene)) {

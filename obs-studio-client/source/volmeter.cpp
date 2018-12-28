@@ -170,7 +170,7 @@ void osn::VolMeter::set_keepalive(v8::Local<v8::Object> obj)
 	m_async_callback->set_keepalive(obj);
 }
 
-Nan::Persistent<v8::FunctionTemplate> osn::VolMeter::prototype = Nan::Persistent<v8::FunctionTemplate>();
+Nan::Persistent<v8::FunctionTemplate> osn::VolMeter::prototype;
 
 void osn::VolMeter::Register(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE target)
 {

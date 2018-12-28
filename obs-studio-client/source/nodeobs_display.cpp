@@ -9,6 +9,7 @@
 #include "shared.hpp"
 #include "utility.hpp"
 
+#ifdef WIN32
 static BOOL CALLBACK EnumChromeWindowsProc(HWND hwnd, LPARAM lParam)
 {
 	char buf[256];
@@ -34,6 +35,7 @@ static void FixChromeD3DIssue(HWND chromeWindow)
 		SetWindowLongPtr(chromeWindow, GWL_STYLE, style);
 	}
 }
+#endif
 
 void display::OBS_content_createDisplay(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
@@ -41,7 +43,9 @@ void display::OBS_content_createDisplay(const v8::FunctionCallbackInfo<v8::Value
 	unsigned char*        bufferData   = (unsigned char*)node::Buffer::Data(bufferObj);
 	uint64_t              windowHandle = *reinterpret_cast<uint64_t*>(bufferData);
 
+	#ifdef WIN32
 	FixChromeD3DIssue((HWND)windowHandle);
+	#endif
 
 	std::string key;
 	ASSERT_GET_VALUE(args[1], key);
@@ -133,7 +137,9 @@ void display::OBS_content_createSourcePreviewDisplay(const v8::FunctionCallbackI
 	unsigned char*        bufferData   = (unsigned char*)node::Buffer::Data(bufferObj);
 	uint64_t              windowHandle = *reinterpret_cast<uint64_t*>(bufferData);
 
+	#ifdef WIN32
 	FixChromeD3DIssue((HWND)windowHandle);
+	#endif
 
 	std::string sourceName, key;
 	ASSERT_GET_VALUE(args[1], sourceName);

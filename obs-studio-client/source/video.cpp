@@ -22,7 +22,7 @@
 #include "utility-v8.hpp"
 #include "utility.hpp"
 
-Nan::Persistent<v8::FunctionTemplate> osn::Video::prototype = Nan::Persistent<v8::FunctionTemplate>();
+Nan::Persistent<v8::FunctionTemplate> osn::Video::prototype;
 
 void osn::Video::Register(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE target)
 {

@@ -43,7 +43,9 @@
 #include "osn-volmeter.hpp"
 #include "osn-module.hpp"
 
+#ifdef _WIN32
 extern "C" __declspec(dllexport) DWORD NvOptimusEnablement = 1;
+#endif
 
 #ifndef _DEBUG
 #include "client/crash_report_database.h"
@@ -110,7 +112,6 @@ int main(int argc, char* argv[])
 	appdata_path.append(L"\\obs-studio-node-server");
 
 	CoTaskMemFree(ppszPath);
-#endif
 
 	std::map<std::string, std::string> annotations;
 	std::vector<std::string>           arguments;
@@ -135,6 +136,7 @@ int main(int argc, char* argv[])
 
 	rc = client.WaitForHandlerStart(INFINITE);
 	/* TODO Check rc value for errors */
+#endif
 #endif
 
 	// Usage:
@@ -214,6 +216,7 @@ int main(int argc, char* argv[])
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
 
+	#ifdef WIN32
 	// Wait on receive the exit message from the crash-handler
 	if (waitBeforeClosing) {
 		HANDLE hPipe;
@@ -239,6 +242,7 @@ int main(int argc, char* argv[])
 			}
 		}
 	}
+	#endif
 
 	// Finalize Server
 	myServer.finalize();

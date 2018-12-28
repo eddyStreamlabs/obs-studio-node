@@ -328,15 +328,15 @@ OBS::Display::Display(uint64_t windowHandle) : Display()
 	m_gsInitData.window.hwnd = reinterpret_cast<void*>(m_ourWindow);
 #endif
 
-	m_display = obs_display_create(&m_gsInitData);
-	if (!m_display)
-		throw std::runtime_error("unable to create display");
+	// m_display = obs_display_create(&m_gsInitData);
+	// if (!m_display)
+	// 	throw std::runtime_error("unable to create display");
 
-	obs_display_add_draw_callback(m_display, DisplayCallback, this);
-	obs_display_set_background_color(m_display, 0x0);
+	// obs_display_add_draw_callback(m_display, DisplayCallback, this);
+	// obs_display_set_background_color(m_display, 0x0);
 
-	SetSize(0, 0);
-	SetPosition(0, 0);
+	// SetSize(0, 0);
+	// SetPosition(0, 0);
 }
 
 OBS::Display::Display(uint64_t windowHandle, std::string sourceName) : Display(windowHandle)
@@ -398,12 +398,14 @@ OBS::Display::~Display()
 void OBS::Display::SetPosition(uint32_t x, uint32_t y)
 {
 	if (m_source != NULL) {
+		#ifdef WIN32
 		blog(
 		    LOG_DEBUG,
-		    "<" __FUNCTION__ "> Adjusting display position for source %s to %ldx%ld.",
+		    "<" + std::string(__FUNCTION__) +  "> Adjusting display position for source %s to %ldx%ld.",
 		    obs_source_get_name(m_source),
 		    x,
 		    y);
+		#endif
 	}
 
 	// Move Window
@@ -427,12 +429,14 @@ std::pair<uint32_t, uint32_t> OBS::Display::GetPosition()
 void OBS::Display::SetSize(uint32_t width, uint32_t height)
 {
 	if (m_source != NULL) {
+		#ifdef WIN32
 		blog(
 		    LOG_DEBUG,
 		    "<" __FUNCTION__ "> Adjusting display size for source %s to %ldx%ld.",
 		    obs_source_get_name(m_source),
 		    width,
 		    height);
+		#endif
 	}
 
 	// Resize Window
@@ -626,7 +630,10 @@ static void
 
 inline bool CloseFloat(float a, float b, float epsilon = 0.01)
 {
+	#ifdef WIN32
 	return std::abs(a - b) <= epsilon;
+	#endif
+	return false;
 }
 
 inline void DrawOutline(OBS::Display* dp, matrix4& mtx, obs_transform_info& info)

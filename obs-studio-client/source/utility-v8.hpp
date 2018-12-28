@@ -47,7 +47,7 @@
 
 #define ASSERT_GET_OBJECT_FIELD(object, field, var)                                           \
 	if (!utilv8::GetFromObject((object), (field), (var))) {                                   \
-		Nan::ThrowTypeError(FIELD_NAME(std::string(__FUNCTION_NAME__ ": Unexpected type."))); \
+		Nan::ThrowTypeError(FIELD_NAME(std::string(__FUNCTION_NAME__) +  ": Unexpected type.")); \
 		return;                                                                               \
 	}
 

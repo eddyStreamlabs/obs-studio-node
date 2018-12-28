@@ -31,7 +31,7 @@ osn::Input::Input(uint64_t id)
 	this->sourceId = id;
 }
 
-Nan::Persistent<v8::FunctionTemplate> osn::Input::prototype = Nan::Persistent<v8::FunctionTemplate>();
+Nan::Persistent<v8::FunctionTemplate> osn::Input::prototype;
 
 void osn::Input::Register(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE target)
 {
@@ -490,7 +490,7 @@ Nan::NAN_METHOD_RETURN_TYPE osn::Input::SetSyncOffset(Nan::NAN_METHOD_ARGS_TYPE 
 	ASSERT_INFO_LENGTH(info, 1);
 	ASSERT_GET_VALUE(info[0], tsobj);
 
-	int64_t sec, nsec;
+	int32_t sec, nsec;
 	ASSERT_GET_OBJECT_FIELD(tsobj, "sec", sec);
 	ASSERT_GET_OBJECT_FIELD(tsobj, "nsec", nsec);
 

@@ -31,10 +31,12 @@
 #include "volmeter.hpp"
 #include "module.hpp"
 
+#ifdef WIN32
 extern "C" __declspec(dllexport) DWORD NvOptimusEnablement = 1;
+#endif
 
 // Definition based on addon_register_func, see 'node.h:L384'.
-void main(v8::Local<v8::Object> exports, v8::Local<v8::Value> module, void* priv)
+void init(v8::Local<v8::Object> exports, v8::Local<v8::Value> module, void* priv)
 {
 	osn::Global::Register(exports);
 	osn::ISource::Register(exports);
@@ -56,4 +58,4 @@ void main(v8::Local<v8::Object> exports, v8::Local<v8::Value> module, void* priv
 	}
 };
 
-NODE_MODULE(obs_studio_node, main); // Upgrade to NAPI_MODULE once N-API hits stable/beta.
+NODE_MODULE(obs_studio_node, init); // Upgrade to NAPI_MODULE once N-API hits stable/beta.

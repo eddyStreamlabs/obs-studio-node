@@ -1,5 +1,4 @@
 #pragma once
-#include <io.h>
 #include <iostream>
 #include <ipc-server.hpp>
 #include <math.h>

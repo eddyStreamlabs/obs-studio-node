@@ -223,6 +223,7 @@ void OBS_content::Register(ipc::server& srv)
 
 void popupAeroDisabledWindow(void)
 {
+	#ifdef WIN32
 	MessageBox(
 	    NULL,
 	    TEXT("Streamlabs OBS needs Aero enabled to run properly on Windows 7.  "
@@ -232,6 +233,7 @@ void popupAeroDisabledWindow(void)
 	         "We recommend upgrading to Windows 10 or enabling Aero."),
 	    TEXT("Aero is disabled"),
 	    MB_OK);
+	#endif
 }
 
 void OBS_content::OBS_content_createDisplay(
@@ -250,6 +252,7 @@ void OBS_content::OBS_content_createDisplay(
 		return;
 	}
 
+	#ifdef WIN32
 	displays.insert_or_assign(args[1].value_str, new OBS::Display(windowHandle));
 
 	if (!IsWindows8OrGreater()) {
@@ -260,6 +263,7 @@ void OBS_content::OBS_content_createDisplay(
 		}
 	}
 	firstDisplayCreation = false;
+	#endif
 	rval.push_back(ipc::value((uint64_t)ErrorCode::Ok));
 	AUTO_DEBUG;
 }
@@ -304,7 +308,9 @@ void OBS_content::OBS_content_createSourcePreviewDisplay(
 		std::cout << "Duplicate key provided to createDisplay!" << std::endl;
 		return;
 	}
+	#ifdef WIN32
 	displays.insert_or_assign(args[2].value_str, new OBS::Display(windowHandle, args[1].value_str));
+	#endif
 	rval.push_back(ipc::value((uint64_t)ErrorCode::Ok));
 	AUTO_DEBUG;
 }

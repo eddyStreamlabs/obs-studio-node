@@ -27,13 +27,14 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 
+#ifdef WIN32
 #include <audiopolicy.h>
 #include <mmdeviceapi.h>
 
 #include <util/windows/ComPtr.hpp>
 #include <util/windows/HRError.hpp>
 #include <util/windows/WinHandle.hpp>
-
+#endif
 #include "error.hpp"
 #include "shared.hpp"
 
@@ -42,7 +43,7 @@ std::string g_moduleDirectory = "";
 os_cpu_usage_info_t *cpuUsageInfo = nullptr;
 uint64_t lastBytesSent = 0;
 uint64_t lastBytesSentTime = 0;
-std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+// std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 std::string                                            slobs_plugin;
 std::vector<std::pair<std::string, obs_module_t*>>     obsModules;
 
@@ -220,7 +221,7 @@ static void DeleteOldestFile(const char* location, unsigned maxLogs)
 
 #include <chrono>
 #include <cstdarg>
-#include <varargs.h>
+#include <stdarg.h>
 
 #ifdef _WIN32
 #include <io.h>
@@ -231,10 +232,14 @@ static void DeleteOldestFile(const char* location, unsigned maxLogs)
 
 inline std::string nodeobs_log_formatted_message(const char* format, va_list& args)
 {
+	#ifdef WIN32
 	size_t            length  = _vscprintf(format, args);
 	std::vector<char> buf     = std::vector<char>(length + 1, '\0');
 	size_t            written = vsprintf_s(buf.data(), buf.size(), format, args);
 	return std::string(buf.begin(), buf.begin() + length);
+	#endif
+	std:string buf;
+	return buf;
 }
 
 std::chrono::high_resolution_clock             hrc;
@@ -290,6 +295,7 @@ static void                                    node_obs_log(int log_level, const
 
 	std::vector<char> timebuf(65535, '\0');
 	std::string       timeformat = "[%.3d:%.2d:%.2d:%.2d.%.3d.%.3d.%.3d][%*s]"; // "%*s";
+	#ifdef WIN32
 	int               length     = sprintf_s(
         timebuf.data(),
         timebuf.size(),
@@ -351,12 +357,15 @@ static void                                    node_obs_log(int log_level, const
 	}
 	*logStream << std::flush;
 
+#endif
+
 #if defined(_WIN32) && defined(OBS_DEBUGBREAK_ON_ERROR)
 	if (log_level <= LOG_ERROR && IsDebuggerPresent())
 		__debugbreak();
 #endif
 }
 
+#ifdef WIN32
 uint32_t pid = GetCurrentProcessId();
 
 std::vector<char> registerProcess(void) {
@@ -432,6 +441,7 @@ void writeCrashHandler(std::vector<char> buffer) {
 
 	CloseHandle(hPipe);
 }
+#endif
 
 void OBS_API::OBS_API_initAPI(
     void*                          data,
@@ -439,7 +449,9 @@ void OBS_API::OBS_API_initAPI(
     const std::vector<ipc::value>& args,
     std::vector<ipc::value>&       rval)
 {
+	#ifdef WIN32
 	writeCrashHandler(registerProcess());
+	#endif
 	/* Map base DLLs as soon as possible into the current process space.
 	* In particular, we need to load obs.dll into memory before we call
 	* any functions from obs else if we delay-loaded the dll, it will
@@ -517,15 +529,17 @@ void OBS_API::OBS_API_initAPI(
 #if defined(_WIN32) && defined(UNICODE)
 	fstream* logfile = new fstream(converter.from_bytes(log_path.c_str()).c_str(), ios_base::out | ios_base::trunc);
 #else
-	fstream* logfile = new fstream(log_path, ios_base::out | ios_base::trunc);
+	// fstream* logfile = new fstream(log_path, ios_base::out | ios_base::trunc);
 #endif
 
+	#ifdef WIN32
 	if (!logfile) {
 		cerr << "Failed to open log file" << endl;
 	}
 
 	/* Delete oldest file in the folder to imitate rotating */
 	base_set_log_handler(node_obs_log, logfile);
+	#endif
 
 	/* INJECT osn::Source::Manager */
 	// Alright, you're probably wondering: Why is osn code here?
@@ -616,7 +630,7 @@ void OBS_API::SetProcessPriority(const char* priority)
 {
 	if (!priority)
 		return;
-
+	#ifdef WIN32
 	if (strcmp(priority, "High") == 0)
 		SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
 	else if (strcmp(priority, "AboveNormal") == 0)
@@ -627,6 +641,7 @@ void OBS_API::SetProcessPriority(const char* priority)
 		SetPriorityClass(GetCurrentProcess(), BELOW_NORMAL_PRIORITY_CLASS);
 	else if (strcmp(priority, "Idle") == 0)
 		SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
+	#endif
 }
 
 void OBS_API::UpdateProcessPriority()
@@ -639,6 +654,7 @@ void OBS_API::UpdateProcessPriority()
 
 bool DisableAudioDucking(bool disable)
 {
+	#ifdef WIN32
 	ComPtr<IMMDeviceEnumerator>   devEmum;
 	ComPtr<IMMDevice>             device;
 	ComPtr<IAudioSessionManager2> sessionManager2;
@@ -668,6 +684,7 @@ bool DisableAudioDucking(bool disable)
 
 	result = sessionControl2->SetDuckingPreference(disable);
 	return SUCCEEDED(result);
+	#endif
 }
 
 void OBS_API::setAudioDeviceMonitoring(void)
@@ -696,8 +713,10 @@ void OBS_API::StopCrashHandler(
 	const std::vector<ipc::value>& args,
 	std::vector<ipc::value>&       rval)
 {
+	#ifdef WIN32
 	writeCrashHandler(unregisterProcess());
 	writeCrashHandler(terminateCrashHandler());
+	#endif
 
 	rval.push_back(ipc::value((uint64_t)ErrorCode::Ok));
 	AUTO_DEBUG;
@@ -957,6 +976,7 @@ double OBS_API::getCurrentFrameRate(void)
 	return obs_get_active_fps();
 }
 
+#ifdef WIN32
 static BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor,
 	HDC      hdcMonitor,
 	LPRECT   lprcMonitor,
@@ -976,11 +996,13 @@ static BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor,
 	}
 	return true;
 }
+#endif
 
 std::vector<Screen> OBS_API::availableResolutions(void)
 {
 	std::vector<Screen> resolutions;
+	#ifdef WIN32
 	EnumDisplayMonitors(NULL, NULL, MonitorEnumProc, reinterpret_cast<LPARAM>(&resolutions));
-
+	#endif WIN32
 	return resolutions;
 }

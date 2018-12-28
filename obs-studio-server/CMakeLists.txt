@@ -82,13 +82,13 @@ add_executable(crashpad_http_upload IMPORTED)
 ExternalProject_Get_Property(crashpad_ep source_dir)
 
 set_property(TARGET crashpad_base PROPERTY IMPORTED_LOCATION
-	"${source_dir}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}base${CMAKE_STATIC_LIBRARY_SUFFIX}")
+	"${source_dir}/lib/base.lib")
 
 set_property(TARGET crashpad_util PROPERTY IMPORTED_LOCATION
-	"${source_dir}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}util${CMAKE_STATIC_LIBRARY_SUFFIX}")
+	"${source_dir}/lib/util.lib")
 
 set_property(TARGET crashpad_client PROPERTY IMPORTED_LOCATION
-	"${source_dir}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}client${CMAKE_STATIC_LIBRARY_SUFFIX}")
+	"${source_dir}/lib/client.lib")
 
 set_property(TARGET crashpad_handler PROPERTY IMPORTED_LOCATION
 	"${source_dir}/bin/crashpad_handler${CMAKE_EXECUTABLE_SUFFIX}")
@@ -127,22 +127,9 @@ add_dependencies(crashpad_util crashpad_client)
 #############################
 # Prerequisites
 #############################
-SET(ENABLE_FACEMASK TRUE CACHE BOOL "Enable Facemask Plugin")
 
-download_project(
-	PROJ libobs
-	URL https://github.com/stream-labs/obs-studio/releases/download/22.0.3-sl-3-fm/obs-msvc2017-x64-22.0.3-sl-3-fm.7z
-	UPDATE_DISCONNECTED 1
-)
-
-INCLUDE("${libobs_SOURCE_DIR}/cmake/LibObs/LibObsConfig.cmake")
-
-# OBS Studio (Signed Binaries)
-download_project(
-	PROJ libobs_signed
-	URL https://github.com/obsproject/obs-studio/releases/download/22.0.2/OBS-Studio-22.0.2-Full-x64.zip
-	UPDATE_DISCONNECTED 1
-)
+SET(LIBOBS_INCLUDE_DIRS "/Users/eddygharbi/streamlabs/obs-studio/libobs/")
+SET(libobs_SOURCE_DIR "/Users/eddygharbi/streamlabs/obs-studio/build/rundir/Debug")
 
 #############################
 # Source, Libraries & Directories
@@ -196,7 +183,7 @@ SET(PROJECT_SOURCE
 SET(PROJECT_LIBRARIES
 	lib-streamlabs-ipc
 	${LIBOBS_LIBRARIES}
-	dwmapi.lib
+	#dwmapi.lib
 )
 SET(PROJECT_INCLUDE_PATHS
 	"${CMAKE_SOURCE_DIR}/source"
@@ -215,6 +202,8 @@ IF(WIN32)
 	)
 ENDIF()
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -undefined dynamic_lookup")
+
 #############################
 # Building
 #############################
@@ -222,8 +211,6 @@ ADD_EXECUTABLE(
 	${PROJECT_NAME}
 	${PROJECT_SOURCE}
 )
-
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
 
 TARGET_LINK_LIBRARIES(
 	${PROJECT_NAME}
@@ -316,16 +303,19 @@ cppcheck_add_project(${PROJECT_NAME})
 INSTALL(TARGETS obs-studio-server
 	RUNTIME DESTINATION "./" COMPONENT Runtime
 )
-if(WIN32 AND MSVC AND (NOT MSVC_VERSION LESS 1600) AND (NOT CMAKE_VERSION VERSION_LESS "3.1"))
+#if(WIN32 AND MSVC AND (NOT MSVC_VERSION LESS 1600) AND (NOT CMAKE_VERSION VERSION_LESS "3.1"))
 	INSTALL(FILES $<TARGET_PDB_FILE:obs-studio-server> DESTINATION "./" OPTIONAL)
-ENDIF()
+#ENDIF()
 INSTALL(DIRECTORY ${PROJECT_DATA} DESTINATION "./" OPTIONAL)
 
 # Crashpad
 INSTALL(DIRECTORY ${crashpad_SOURCE_DIR}/bin/ DESTINATION "./")
 
 # libobs
-INSTALL(DIRECTORY "${libobs_SOURCE_DIR}/bin/64bit/" DESTINATION "./" PATTERN "*.lib" EXCLUDE)
+INSTALL(DIRECTORY "${libobs_SOURCE_DIR}/bin/" DESTINATION "./" PATTERN "*.lib" EXCLUDE)
 INSTALL(DIRECTORY "${libobs_SOURCE_DIR}/data/" DESTINATION "./data")
 INSTALL(DIRECTORY "${libobs_SOURCE_DIR}/obs-plugins/" DESTINATION "./obs-plugins")
-INSTALL(DIRECTORY "${libobs_signed_SOURCE_DIR}/data/obs-plugins/win-capture/" DESTINATION "./data/obs-plugins/win-capture")
+
+IF(WIN32)
+	INSTALL(DIRECTORY "${libobs_signed_SOURCE_DIR}/data/obs-plugins/win-capture/" DESTINATION "./data/obs-plugins/win-capture")
+ENDIF()

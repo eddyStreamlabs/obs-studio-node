@@ -25,7 +25,7 @@
 #include "utility-v8.hpp"
 #include "utility.hpp"
 
-Nan::Persistent<v8::FunctionTemplate> osn::ISource::prototype = Nan::Persistent<v8::FunctionTemplate>();
+Nan::Persistent<v8::FunctionTemplate> osn::ISource::prototype;
 osn::ISource*                         sourceObject;
 
 osn::ISource::~ISource()
@@ -275,13 +275,13 @@ Nan::NAN_METHOD_RETURN_TYPE osn::ISource::GetProperties(Nan::NAN_METHOD_ARGS_TYP
 				item2.name     = item.name;
 				item2.disabled = !item.enabled;
 				switch ((uint8_t)cast_property->format) {
-				case obs::ListProperty::Format::Integer:
+				case (uint8_t)obs::ListProperty::Format::Integer:
 					item2.value_int = item.value_int;
 					break;
-				case obs::ListProperty::Format::Float:
+				case (uint8_t)obs::ListProperty::Format::Float:
 					item2.value_float = item.value_float;
 					break;
-				case obs::ListProperty::Format::String:
+				case (uint8_t)obs::ListProperty::Format::String:
 					item2.value_str = item.value_string;
 					break;
 				}
@@ -396,7 +396,7 @@ Nan::NAN_METHOD_RETURN_TYPE osn::ISource::DisconnectHotkeyCallback(const v8::Fun
 
 Nan::NAN_METHOD_RETURN_TYPE osn::ISource::ProcessHotkeyStatus(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
-	uint64_t    hotkeyId;
+	uint32_t    hotkeyId;
 	bool        press;
 	std::string sourceId;
 
